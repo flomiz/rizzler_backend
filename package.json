@@ -1,7 +1,7 @@
 {
-  "name": "replymind-backend",
+  "name": "rizzler-backend",
   "version": "1.0.0",
-  "description": "Backend API for ReplyMind AI Chat Assistant",
+  "description": "Backend API for Rizzler AI Chat Assistant",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
