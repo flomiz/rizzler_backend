@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const punchlineSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    index: true,
+  },
   punchline: {
     type: String,
     required: true,

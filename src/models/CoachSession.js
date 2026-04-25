@@ -14,6 +14,11 @@ const coachMessageSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const coachSessionSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    index: true,
+  },
   title: {
     type: String,
     default: 'New Session',

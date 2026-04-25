@@ -12,7 +12,10 @@ exports.create = async (req, res, next) => {
       });
     }
 
-    const conversation = await Conversation.create({ name: name.trim() });
+    const conversation = await Conversation.create({
+      name: name.trim(),
+      userId: req.userId,
+    });
 
     res.status(201).json({
       success: true,
@@ -23,9 +26,9 @@ exports.create = async (req, res, next) => {
   }
 };
 
-exports.list = async (_req, res, next) => {
+exports.list = async (req, res, next) => {
   try {
-    const conversations = await Conversation.find()
+    const conversations = await Conversation.find({ userId: req.userId })
       .sort({ updatedAt: -1 })
       .lean();
 
@@ -54,7 +57,10 @@ exports.list = async (_req, res, next) => {
 
 exports.getById = async (req, res, next) => {
   try {
-    const conversation = await Conversation.findById(req.params.id).lean();
+    const conversation = await Conversation.findOne({
+      _id: req.params.id,
+      userId: req.userId,
+    }).lean();
     if (!conversation) {
       return res.status(404).json({ success: false, error: 'Conversation not found' });
     }
@@ -80,8 +86,8 @@ exports.update = async (req, res, next) => {
       return res.status(400).json({ success: false, error: 'Name is required' });
     }
 
-    const conversation = await Conversation.findByIdAndUpdate(
-      req.params.id,
+    const conversation = await Conversation.findOneAndUpdate(
+      { _id: req.params.id, userId: req.userId },
       { name: name.trim() },
       { new: true }
     );
@@ -98,7 +104,10 @@ exports.update = async (req, res, next) => {
 
 exports.remove = async (req, res, next) => {
   try {
-    const conversation = await Conversation.findByIdAndDelete(req.params.id);
+    const conversation = await Conversation.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.userId,
+    });
     if (!conversation) {
       return res.status(404).json({ success: false, error: 'Conversation not found' });
     }

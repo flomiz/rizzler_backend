@@ -29,7 +29,7 @@ exports.generateReplies = async (req, res, next) => {
       });
     }
 
-    const conversation = await Conversation.findById(conversationId);
+    const conversation = await Conversation.findOne({ _id: conversationId, userId: req.userId });
     if (!conversation) {
       return res.status(404).json({
         success: false,
@@ -56,6 +56,7 @@ exports.generateReplies = async (req, res, next) => {
     );
 
     const chat = await Chat.create({
+      userId: req.userId,
       conversationId,
       message,
       emotion,
@@ -94,8 +95,8 @@ exports.selectResponse = async (req, res, next) => {
       });
     }
 
-    const chat = await Chat.findByIdAndUpdate(
-      req.params.id,
+    const chat = await Chat.findOneAndUpdate(
+      { _id: req.params.id, userId: req.userId },
       { selectedResponse: responseIndex },
       { new: true }
     );
@@ -118,7 +119,7 @@ exports.selectResponse = async (req, res, next) => {
 
 exports.getHistory = async (req, res, next) => {
   try {
-    const chats = await Chat.find()
+    const chats = await Chat.find({ userId: req.userId })
       .sort({ createdAt: -1 })
       .limit(50)
       .select('message emotion responses aiProvider createdAt');
@@ -138,6 +139,7 @@ exports.generatePunchline = async (req, res, next) => {
     const result = await aiService.generatePunchline(topic || '', category || '');
 
     const saved = await Punchline.create({
+      userId: req.userId,
       punchline: result.punchline,
       category: result.category,
       topic: topic || '',
@@ -161,7 +163,7 @@ exports.generatePunchline = async (req, res, next) => {
 
 exports.getPunchlineHistory = async (req, res, next) => {
   try {
-    const punchlines = await Punchline.find()
+    const punchlines = await Punchline.find({ userId: req.userId })
       .sort({ createdAt: -1 })
       .limit(50)
       .lean();

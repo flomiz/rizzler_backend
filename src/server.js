@@ -7,6 +7,7 @@ const connectDB = require('./config/db');
 const chatRoutes = require('./routes/chatRoutes');
 const conversationRoutes = require('./routes/conversationRoutes');
 const coachRoutes = require('./routes/coachRoutes');
+const authRoutes = require('./routes/authRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -22,6 +23,7 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+app.use('/api/auth', authRoutes);
 app.use('/api/conversations', conversationRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/coach', coachRoutes);

@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const coachController = require('../controllers/coachController');
+const auth = require('../middleware/auth');
+
+router.use(auth);
 
 router.post('/sessions', coachController.createSession);
 router.get('/sessions', coachController.getSessions);

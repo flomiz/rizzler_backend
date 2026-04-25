@@ -5,6 +5,7 @@ exports.createSession = async (req, res, next) => {
   try {
     const { title } = req.body;
     const session = await CoachSession.create({
+      userId: req.userId,
       title: title || 'New Session',
       messages: [],
     });
@@ -23,9 +24,9 @@ exports.createSession = async (req, res, next) => {
   }
 };
 
-exports.getSessions = async (_req, res, next) => {
+exports.getSessions = async (req, res, next) => {
   try {
-    const sessions = await CoachSession.find()
+    const sessions = await CoachSession.find({ userId: req.userId })
       .sort({ updatedAt: -1 })
       .select('title messages createdAt updatedAt')
       .lean();
@@ -49,7 +50,7 @@ exports.getSessions = async (_req, res, next) => {
 
 exports.getSession = async (req, res, next) => {
   try {
-    const session = await CoachSession.findById(req.params.id).lean();
+    const session = await CoachSession.findOne({ _id: req.params.id, userId: req.userId }).lean();
     if (!session) {
       return res.status(404).json({ success: false, error: 'Session not found' });
     }
@@ -84,7 +85,7 @@ exports.sendMessage = async (req, res, next) => {
       });
     }
 
-    const session = await CoachSession.findById(req.params.id);
+    const session = await CoachSession.findOne({ _id: req.params.id, userId: req.userId });
     if (!session) {
       return res.status(404).json({ success: false, error: 'Session not found' });
     }
@@ -139,7 +140,7 @@ exports.sendMessage = async (req, res, next) => {
 
 exports.deleteSession = async (req, res, next) => {
   try {
-    const session = await CoachSession.findByIdAndDelete(req.params.id);
+    const session = await CoachSession.findOneAndDelete({ _id: req.params.id, userId: req.userId });
     if (!session) {
       return res.status(404).json({ success: false, error: 'Session not found' });
     }
